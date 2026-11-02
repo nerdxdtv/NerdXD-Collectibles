@@ -1,8 +1,9 @@
 
 /* ============================================
    NERDXD COLLECTIBLES — OBS REVEAL OVERLAY
-   Version 5 — Reflective Card Shimmer
+   Version 6 — Reflective 3D Sway
    Canvas: 2560 x 1080
+   Duration: 7 seconds
    ============================================ */
 
 /* BROWNIST FONT */
@@ -20,9 +21,9 @@
 :root {
   --accent: #00f870;
 
-  /* Reflection strength */
-  --gloss-opacity: 0.22;
-  --shimmer-opacity: 0.65;
+  /* Adjustable reflection strengths */
+  --gloss-opacity: 0.28;
+  --shimmer-opacity: 0.78;
 }
 
 * {
@@ -36,18 +37,23 @@ body {
   height: 100%;
   overflow: hidden;
   background: transparent;
+
   font-family:
     "Brownist", "Trebuchet MS", Arial, sans-serif;
 }
 
-/* MAIN STAGE */
+/* ============================================
+   MAIN STAGE
+   ============================================ */
 
 #stage {
   width: 2560px;
   height: 1080px;
+
   position: absolute;
   top: 0;
   left: 0;
+
   transform-origin: top left;
   pointer-events: none;
   visibility: hidden;
@@ -57,12 +63,16 @@ body {
   visibility: visible;
 }
 
-/* RARITY GLOW */
+/* ============================================
+   RARITY GLOW
+   ============================================ */
 
 .effect {
   position: absolute;
+
   left: 50%;
   top: 48%;
+
   width: 930px;
   height: 930px;
 
@@ -83,10 +93,13 @@ body {
   filter: blur(35px);
 }
 
-/* CARD POSITIONING */
+/* ============================================
+   CARD POSITIONING
+   ============================================ */
 
 .card {
   position: absolute;
+
   left: 50%;
   top: 46%;
 
@@ -98,26 +111,36 @@ body {
 
   opacity: 0;
 
+  overflow: visible;
+
   filter: drop-shadow(
     0 18px 22px rgba(0, 0, 0, 0.6)
   );
-
-  /* Preserve 3D perspective and card edges */
-  overflow: visible;
 }
 
-/* 3D CARD ROTATION */
+/* ============================================
+   3D CARD ROTOR
+   ============================================ */
 
 .card-rotor {
   position: relative;
+
   width: 100%;
   height: 100%;
 
   transform-style: preserve-3d;
-  transform: rotateY(0deg);
+
+  transform:
+    rotateY(0deg)
+    rotateX(0deg)
+    rotateZ(0deg);
+
+  transform-origin: center center;
 }
 
-/* CARD FACES */
+/* ============================================
+   CARD FACES
+   ============================================ */
 
 .face {
   position: absolute;
@@ -127,22 +150,20 @@ body {
   -webkit-backface-visibility: hidden;
 
   border-radius: 0;
-
-  /* Clips shimmer to the card's rectangular bounds */
   overflow: hidden;
-
-  transform-style: flat;
 }
 
 .face img {
   display: block;
+
   width: 100%;
   height: 100%;
+
   object-fit: fill;
   border-radius: 0;
 }
 
-/* FRONT AND BACK ORIENTATION */
+/* Front and back orientation */
 
 .face.back {
   transform: rotateY(0deg);
@@ -150,65 +171,70 @@ body {
 
 .face.front {
   transform: rotateY(180deg);
+  isolation: isolate;
 }
 
 /* ============================================
-   CARD REFLECTION / GLOSS
+   STATIC REFLECTIVE COATING
    ============================================ */
-
-/* Subtle reflective coating on the front */
 
 .face.front::before {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 3;
 
+  z-index: 3;
   pointer-events: none;
 
   background: linear-gradient(
-    160deg,
-    rgba(255, 255, 255, 0.14) 0%,
-    rgba(255, 255, 255, 0.07) 18%,
+    155deg,
+    rgba(255, 255, 255, 0.19) 0%,
+    rgba(255, 255, 255, 0.09) 18%,
     rgba(255, 255, 255, 0.00) 43%,
-    rgba(255, 255, 255, 0.02) 72%,
-    rgba(255, 255, 255, 0.08) 100%
+    rgba(255, 255, 255, 0.03) 72%,
+    rgba(255, 255, 255, 0.12) 100%
   );
 
   mix-blend-mode: screen;
   opacity: var(--gloss-opacity);
 }
 
-/* Diagonal moving light streak */
+/* ============================================
+   MOVING LIGHT REFLECTION
+   ============================================ */
 
 .face.front::after {
   content: "";
+
   position: absolute;
+  z-index: 4;
+
+  pointer-events: none;
 
   top: -35%;
-  bottom: -35%;
-  left: -65%;
+  left: -75%;
 
-  width: 38%;
-  height: 170%;
-
-  z-index: 4;
-  pointer-events: none;
+  width: 48%;
+  height: 175%;
 
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.00) 0%,
-    rgba(255, 255, 255, 0.03) 15%,
-    rgba(255, 255, 255, 0.10) 33%,
-    rgba(255, 255, 255, 0.27) 50%,
-    rgba(255, 255, 255, 0.10) 67%,
-    rgba(255, 255, 255, 0.03) 85%,
+    rgba(255, 255, 255, 0.05) 13%,
+    rgba(255, 255, 255, 0.17) 28%,
+    rgba(255, 255, 255, 0.39) 45%,
+    rgba(255, 255, 255, 0.52) 50%,
+    rgba(255, 255, 255, 0.39) 55%,
+    rgba(255, 255, 255, 0.17) 72%,
+    rgba(255, 255, 255, 0.05) 87%,
     rgba(255, 255, 255, 0.00) 100%
   );
 
   transform: skewX(-22deg);
-  filter: blur(4px);
+
+  filter: blur(3px);
   mix-blend-mode: screen;
+
   opacity: 0;
 }
 
@@ -239,19 +265,16 @@ body {
     0 0 18px #000000;
 }
 
-/* NEW CARD / DUPLICATE HEADLINE */
-
 .headline {
   font-family:
     "Brownist", "Trebuchet MS", Arial, sans-serif;
 
   font-size: 57px;
   font-weight: 400;
+
   letter-spacing: 2px;
   color: var(--accent);
 }
-
-/* VIEWER USERNAME */
 
 .viewer {
   font-family:
@@ -259,10 +282,9 @@ body {
 
   font-size: 39px;
   font-weight: 400;
+
   overflow-wrap: anywhere;
 }
-
-/* CARD NAME AND RARITY */
 
 .detail {
   margin-top: 8px;
@@ -272,13 +294,13 @@ body {
 
   font-size: 27px;
   font-weight: 400;
+
   letter-spacing: 2px;
   text-transform: uppercase;
 }
 
 /* ============================================
    ANIMATION TRIGGERS
-   Total duration: 7 seconds
    ============================================ */
 
 #stage.active .effect {
@@ -290,99 +312,270 @@ body {
 }
 
 #stage.active .card-rotor {
-  animation: flipReveal 7s ease-in-out forwards;
+  animation: flipAndSway 7s ease-in-out forwards;
 }
 
 #stage.active .text-panel {
   animation: panelReveal 7s ease forwards;
 }
 
-/* New: once-only shimmer after the flip */
-
 #stage.active .face.front::after {
-  animation:
-    cardShimmer 7s ease-in-out forwards;
+  animation: reflectiveMovement 7s linear forwards;
 }
 
 /* ============================================
-   ORIGINAL CARD ENTRANCE / EXIT
+   CARD ENTRANCE AND FLOAT
    ============================================ */
 
 @keyframes cardEnter {
   0% {
     opacity: 0;
     transform:
-      translate(-50%, -40%) scale(.55);
+      translate(-50%, -40%)
+      scale(.55);
   }
 
   12% {
     opacity: 1;
     transform:
-      translate(-50%, -50%) scale(1);
+      translate(-50%, -50%)
+      scale(1);
   }
 
   27% {
+    opacity: 1;
     transform:
-      translate(-50%, -50%) scale(1);
+      translate(-50%, -50%)
+      scale(1);
   }
 
   44% {
+    opacity: 1;
     transform:
-      translate(-50%, -50%) scale(1.07);
+      translate(-50%, -50%)
+      scale(1.07);
   }
 
-  54%,
+  /* Begin gentle floating after the flip */
+
+  54% {
+    opacity: 1;
+    transform:
+      translate(-50%, -50%)
+      scale(1);
+  }
+
+  64% {
+    opacity: 1;
+    transform:
+      translate(-50%, -52%)
+      scale(1.015);
+  }
+
+  74% {
+    opacity: 1;
+    transform:
+      translate(-50%, -49%)
+      scale(1);
+  }
+
   83% {
     opacity: 1;
     transform:
-      translate(-50%, -50%) scale(1);
+      translate(-50%, -51%)
+      scale(1.01);
   }
+
+  /* Original fade-out */
 
   100% {
     opacity: 0;
     transform:
-      translate(-50%, -58%) scale(.92);
+      translate(-50%, -58%)
+      scale(.92);
   }
 }
 
-/* ORIGINAL 3D CARD FLIP */
+/* ============================================
+   3D FLIP AND POST-REVEAL SWAY
+   ============================================ */
 
-@keyframes flipReveal {
+@keyframes flipAndSway {
+
+  /* Card starts with its back visible */
+
   0%,
   27% {
-    transform: rotateY(0deg);
+    transform:
+      rotateY(0deg)
+      rotateX(0deg)
+      rotateZ(0deg);
   }
 
-  44%,
+  /* Front begins becoming visible here.
+     The reflective streak starts at this point. */
+
+  36% {
+    transform:
+      rotateY(118deg)
+      rotateX(0deg)
+      rotateZ(0deg);
+  }
+
+  /* Original flip completes */
+
+  44% {
+    transform:
+      rotateY(180deg)
+      rotateX(0deg)
+      rotateZ(0deg);
+  }
+
+  /* Gentle 3D sway after reveal */
+
+  54% {
+    transform:
+      rotateY(177deg)
+      rotateX(2deg)
+      rotateZ(-0.7deg);
+  }
+
+  64% {
+    transform:
+      rotateY(184deg)
+      rotateX(-2deg)
+      rotateZ(0.8deg);
+  }
+
+  74% {
+    transform:
+      rotateY(177deg)
+      rotateX(1.5deg)
+      rotateZ(-0.6deg);
+  }
+
+  83% {
+    transform:
+      rotateY(182deg)
+      rotateX(-1deg)
+      rotateZ(0.4deg);
+  }
+
+  /* Settle while fading away */
+
   100% {
-    transform: rotateY(180deg);
+    transform:
+      rotateY(180deg)
+      rotateX(0deg)
+      rotateZ(0deg);
   }
 }
 
-/* ORIGINAL TEXT ENTRANCE / EXIT */
+/* ============================================
+   REFLECTION TRACKING CARD ANGLE
+   ============================================ */
+
+/*
+   Reflection starts during the flip as the
+   front face becomes visible.
+
+   After the reveal, the light travels back
+   and forth in coordination with the
+   card's gentle 3D sway.
+*/
+
+@keyframes reflectiveMovement {
+
+  0%,
+  33% {
+    left: -75%;
+    opacity: 0;
+  }
+
+  /* Light appears during flip */
+
+  36% {
+    left: -55%;
+    opacity: 0.35;
+  }
+
+  40% {
+    left: -15%;
+    opacity: var(--shimmer-opacity);
+  }
+
+  44% {
+    left: 35%;
+    opacity: 0.63;
+  }
+
+  /* Card sways toward the left */
+
+  54% {
+    left: 85%;
+    opacity: 0.47;
+  }
+
+  /* Card sways toward the right */
+
+  64% {
+    left: 45%;
+    opacity: 0.55;
+  }
+
+  /* Light moves with the card */
+
+  74% {
+    left: -15%;
+    opacity: 0.52;
+  }
+
+  83% {
+    left: 35%;
+    opacity: 0.38;
+  }
+
+  /* Reflection fades with card */
+
+  100% {
+    left: 85%;
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   ORIGINAL TEXT FADE
+   ============================================ */
 
 @keyframes panelReveal {
+
   0%,
   40% {
     opacity: 0;
-    transform: translate(-50%, 25px);
+    transform:
+      translate(-50%, 25px);
   }
 
   50%,
   82% {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform:
+      translate(-50%, 0);
   }
 
   100% {
     opacity: 0;
-    transform: translate(-50%, -12px);
+    transform:
+      translate(-50%, -12px);
   }
 }
 
-/* ORIGINAL RARITY AURA */
+/* ============================================
+   ORIGINAL RARITY AURA
+   ============================================ */
 
 @keyframes aura {
+
   0% {
     opacity: 0;
     scale: .5;
@@ -406,43 +599,5 @@ body {
   100% {
     opacity: 0;
     scale: 1.2;
-  }
-}
-
-/* ============================================
-   NEW: REFLECTIVE LIGHT SWEEP
-   ============================================ */
-
-/*
-   0–48%:  Invisible while card enters/flips
-   48–54%: Light begins entering from left
-   54–73%: Light sweeps across the card
-   73–100%: Reflection disappears
-*/
-
-@keyframes cardShimmer {
-  0%,
-  48% {
-    left: -65%;
-    opacity: 0;
-  }
-
-  54% {
-    left: -55%;
-    opacity: var(--shimmer-opacity);
-  }
-
-  65% {
-    opacity: var(--shimmer-opacity);
-  }
-
-  73% {
-    left: 145%;
-    opacity: 0;
-  }
-
-  100% {
-    left: 145%;
-    opacity: 0;
   }
 }
