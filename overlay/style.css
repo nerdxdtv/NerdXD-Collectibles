@@ -1,29 +1,22 @@
 
-/* ============================================
-   NERDXD COLLECTIBLES — OBS REVEAL OVERLAY
-   Version 7 — Continuous Motion & Reflection
-   Canvas: 2560 x 1080
-   Duration: 7 seconds
-   ============================================ */
-
-/* BROWNIST FONT */
+/* ==========================================
+   NERDXD COLLECTIBLES — OBS REVEAL
+   Version 8 — Smooth Floating Reflection
+   2560 x 1080 | 7 seconds
+   ========================================== */
 
 @font-face {
   font-family: "Brownist";
   src: url("./fonts/Brownist.woff2") format("woff2");
-  font-style: normal;
   font-weight: 400;
+  font-style: normal;
   font-display: swap;
 }
 
-/* GLOBAL SETTINGS */
-
 :root {
   --accent: #00f870;
-
-  /* Adjustable reflection strengths */
-  --gloss-opacity: 0.28;
-  --shimmer-opacity: 0.78;
+  --gloss-strength: .35;
+  --shine-strength: .72;
 }
 
 * {
@@ -37,125 +30,86 @@ body {
   height: 100%;
   overflow: hidden;
   background: transparent;
-
-  font-family:
-    "Brownist", "Trebuchet MS", Arial, sans-serif;
+  font-family: "Brownist", "Trebuchet MS", Arial, sans-serif;
 }
 
-/* ============================================
-   MAIN STAGE
-   ============================================ */
+/* Stage */
 
 #stage {
+  position: absolute;
+  left: 0;
+  top: 0;
   width: 2560px;
   height: 1080px;
-
-  position: absolute;
-  top: 0;
-  left: 0;
-
   transform-origin: top left;
-  pointer-events: none;
   visibility: hidden;
+  pointer-events: none;
 }
 
 #stage.active {
   visibility: visible;
 }
 
-/* ============================================
-   RARITY GLOW
-   ============================================ */
+/* Rarity glow */
 
 .effect {
   position: absolute;
   left: 50%;
   top: 48%;
-
   width: 930px;
   height: 930px;
-
   transform: translate(-50%, -50%);
   border-radius: 50%;
-
   background: radial-gradient(
     circle,
-    color-mix(
-      in srgb,
-      var(--accent) 43%,
-      transparent
-    ),
+    color-mix(in srgb, var(--accent) 43%, transparent),
     transparent 67%
   );
-
-  opacity: 0;
   filter: blur(35px);
+  opacity: 0;
 }
 
-/* ============================================
-   CARD POSITIONING
-   ============================================ */
+/* Card entrance and positioning */
 
 .card {
   position: absolute;
-
   left: 50%;
   top: 46%;
-
   width: 490px;
   height: 588px;
-
-  transform: translate(-50%, -50%);
   perspective: 1600px;
-
+  transform: translate(-50%, -50%);
   opacity: 0;
   overflow: visible;
-
-  filter: drop-shadow(
-    0 18px 22px rgba(0, 0, 0, 0.6)
-  );
+  filter: drop-shadow(0 18px 22px rgba(0,0,0,.6));
 }
 
-/* ============================================
-   3D ROTOR
-   ============================================ */
+/* 3D rotor */
 
 .card-rotor {
   position: relative;
-
   width: 100%;
   height: 100%;
-
   transform-style: preserve-3d;
   transform-origin: center center;
-
-  transform:
-    rotateY(0deg)
-    rotateX(0deg)
-    rotateZ(0deg);
+  transform: rotateY(0deg);
 }
 
-/* ============================================
-   CARD FACES
-   ============================================ */
+/* Card faces */
 
 .face {
   position: absolute;
   inset: 0;
-
+  border-radius: 0;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-
-  border-radius: 0;
   overflow: hidden;
 }
 
 .face img {
   display: block;
-
   width: 100%;
   height: 100%;
-
   object-fit: fill;
   border-radius: 0;
 }
@@ -169,462 +123,276 @@ body {
   isolation: isolate;
 }
 
-/* ============================================
-   SUBTLE REFLECTIVE COATING
-   ============================================ */
+/* Static, very subtle glossy finish */
 
 .face.front::before {
   content: "";
   position: absolute;
   inset: 0;
-
-  z-index: 3;
+  z-index: 2;
   pointer-events: none;
-
   background: linear-gradient(
     155deg,
-    rgba(255,255,255,0.19) 0%,
-    rgba(255,255,255,0.09) 18%,
-    rgba(255,255,255,0.00) 43%,
-    rgba(255,255,255,0.03) 72%,
-    rgba(255,255,255,0.12) 100%
+    rgba(255,255,255,.15),
+    rgba(255,255,255,.03) 35%,
+    transparent 55%,
+    rgba(255,255,255,.09)
   );
-
-  mix-blend-mode: screen;
-  opacity: var(--gloss-opacity);
+  opacity: var(--gloss-strength);
 }
 
-/* ============================================
-   REFLECTIVE LIGHT STREAK
-   ============================================ */
+/* Full-height moving reflection
+
+   The highlight is a diagonal band spanning
+   the entire card height. It moves horizontally
+   across the face rather than along its corner.
+*/
 
 .face.front::after {
   content: "";
   position: absolute;
-
-  z-index: 4;
+  z-index: 3;
   pointer-events: none;
 
-  top: -35%;
-  left: -75%;
-
-  width: 48%;
-  height: 175%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 
   background: linear-gradient(
-    90deg,
-    rgba(255,255,255,0.00) 0%,
-    rgba(255,255,255,0.05) 12%,
-    rgba(255,255,255,0.17) 28%,
-    rgba(255,255,255,0.40) 44%,
-    rgba(255,255,255,0.56) 50%,
-    rgba(255,255,255,0.40) 56%,
-    rgba(255,255,255,0.17) 72%,
-    rgba(255,255,255,0.05) 88%,
-    rgba(255,255,255,0.00) 100%
+    105deg,
+    transparent 20%,
+    rgba(255,255,255,.025) 34%,
+    rgba(255,255,255,.12) 43%,
+    rgba(255,255,255,.38) 49%,
+    rgba(255,255,255,.48) 50%,
+    rgba(255,255,255,.38) 51%,
+    rgba(255,255,255,.12) 57%,
+    rgba(255,255,255,.025) 66%,
+    transparent 80%
   );
 
-  transform:
-    translate3d(0, 0, 0)
-    skewX(-22deg);
-
-  filter: blur(2px);
-  mix-blend-mode: screen;
-
   opacity: 0;
+  transform: translate3d(-120%,0,0);
+  will-change: transform, opacity;
 }
 
-/* ============================================
-   TEXT PANEL
-   ============================================ */
+/* Text */
 
 .text-panel {
   position: absolute;
-
   top: 825px;
   left: 50%;
-
   width: 1000px;
-
-  transform: translate(-50%, 25px);
-
+  transform: translate(-50%,25px);
   text-align: center;
   opacity: 0;
-
-  color: #ffffff;
-
-  font-family:
-    "Brownist", "Trebuchet MS", Arial, sans-serif;
-
-  text-shadow:
-    0 3px 10px #000000,
-    0 0 18px #000000;
+  color: white;
+  font-family: "Brownist", "Trebuchet MS", Arial, sans-serif;
+  text-shadow: 0 3px 10px black, 0 0 18px black;
 }
 
 .headline {
-  font-family:
-    "Brownist", "Trebuchet MS", Arial, sans-serif;
-
   font-size: 57px;
   font-weight: 400;
-
   letter-spacing: 2px;
   color: var(--accent);
 }
 
 .viewer {
-  font-family:
-    "Brownist", "Trebuchet MS", Arial, sans-serif;
-
   font-size: 39px;
   font-weight: 400;
-
   overflow-wrap: anywhere;
 }
 
 .detail {
   margin-top: 8px;
-
-  font-family:
-    "Brownist", "Trebuchet MS", Arial, sans-serif;
-
   font-size: 27px;
   font-weight: 400;
-
   letter-spacing: 2px;
   text-transform: uppercase;
 }
 
-/* ============================================
-   ANIMATION TRIGGERS
-   ============================================ */
+/* ==========================================
+   ANIMATION CONTROLLERS
+   ========================================== */
 
 #stage.active .effect {
   animation: aura 7s ease forwards;
 }
 
 #stage.active .card {
-  animation: continuousFloat 7s linear forwards;
+  animation: cardMotion 7s linear forwards;
   will-change: transform, opacity;
 }
 
 #stage.active .card-rotor {
-  animation: smoothFlipSway 7s linear forwards;
+  animation: cardRotation 7s linear forwards;
   will-change: transform;
+}
+
+#stage.active .face.front::after {
+  animation: lightReflection 7s linear forwards;
 }
 
 #stage.active .text-panel {
   animation: panelReveal 7s ease forwards;
 }
 
-#stage.active .face.front::after {
-  animation: fastReflection 7s linear forwards;
-  will-change: transform, opacity;
-}
+/* ==========================================
+   ENTRANCE, FLOAT, EXIT
+   ========================================== */
 
-/* ============================================
-   CONTINUOUS FLOAT
-   ============================================ */
-
-/*
-   Small vertical motion begins during entrance.
-   Motion continues through flip and sway.
-   Final fade-out remains unchanged.
-*/
-
-@keyframes continuousFloat {
-
+@keyframes cardMotion {
   0% {
     opacity: 0;
-    transform:
-      translate(-50%, -40%)
-      scale(.55);
-    animation-timing-function:
-      cubic-bezier(.22, 1, .36, 1);
+    transform: translate(-50%,-40%) scale(.55);
+    animation-timing-function: cubic-bezier(.22,1,.36,1);
   }
 
   12% {
     opacity: 1;
-    transform:
-      translate(-50%, -50%)
-      scale(1);
+    transform: translate(-50%,-50%) scale(1);
     animation-timing-function: ease-in-out;
   }
 
   27% {
     opacity: 1;
-    transform:
-      translate(-50%, -51%)
-      scale(1);
+    transform: translate(-50%,-50.7%) scale(1);
     animation-timing-function: ease-in-out;
   }
 
-  43% {
+  44% {
     opacity: 1;
-    transform:
-      translate(-50%, -49.7%)
-      scale(1.045);
+    transform: translate(-50%,-49.7%) scale(1.055);
     animation-timing-function: ease-in-out;
   }
 
-  55% {
+  62% {
     opacity: 1;
-    transform:
-      translate(-50%, -51.2%)
-      scale(1.01);
-    animation-timing-function: ease-in-out;
-  }
-
-  68% {
-    opacity: 1;
-    transform:
-      translate(-50%, -49.5%)
-      scale(1);
+    transform: translate(-50%,-50.8%) scale(1.025);
     animation-timing-function: ease-in-out;
   }
 
   81% {
     opacity: 1;
-    transform:
-      translate(-50%, -51%)
-      scale(1.01);
+    transform: translate(-50%,-49.6%) scale(1.01);
     animation-timing-function: ease-in-out;
   }
 
   86% {
     opacity: 1;
-    transform:
-      translate(-50%, -50.5%)
-      scale(1);
-    animation-timing-function:
-      cubic-bezier(.4, 0, .8, 1);
+    transform: translate(-50%,-49.8%) scale(1);
+    animation-timing-function: ease-in;
   }
 
   100% {
     opacity: 0;
-    transform:
-      translate(-50%, -58%)
-      scale(.92);
+    transform: translate(-50%,-58%) scale(.92);
   }
 }
 
-/* ============================================
-   SMOOTH FLIP INTO GENTLE SWAY
-   ============================================ */
+/* ==========================================
+   FLIP INTO SOFT SWAY
+   ========================================== */
 
-/*
-   The flip slows into its final orientation
-   instead of stopping abruptly.
-
-   Small, continuous 3D sway follows.
-*/
-
-@keyframes smoothFlipSway {
-
-  0%,
-  27% {
-    transform:
-      rotateY(0deg)
-      rotateX(0deg)
-      rotateZ(0deg);
-
-    animation-timing-function:
-      cubic-bezier(.18, .72, .30, 1);
+@keyframes cardRotation {
+  0%, 27% {
+    transform: rotateY(0deg) rotateX(0deg);
+    animation-timing-function: cubic-bezier(.35,.05,.55,1);
   }
-
-  /* Front begins becoming visible */
-
-  35% {
-    transform:
-      rotateY(103deg)
-      rotateX(0.5deg)
-      rotateZ(-0.2deg);
-
-    animation-timing-function:
-      cubic-bezier(.24, .65, .55, 1);
-  }
-
-  /* Finish the flip with slight overshoot */
 
   44% {
-    transform:
-      rotateY(182deg)
-      rotateX(1deg)
-      rotateZ(-0.3deg);
+    transform: rotateY(180deg) rotateX(0deg);
+    animation-timing-function: cubic-bezier(.3,0,.45,1);
+  }
 
+  59% {
+    transform: rotateY(183deg) rotateX(1.4deg);
     animation-timing-function: ease-in-out;
   }
 
-  /* Settle gradually into the first sway */
-
-  54% {
-    transform:
-      rotateY(184deg)
-      rotateX(2deg)
-      rotateZ(-0.7deg);
-
-    animation-timing-function: ease-in-out;
-  }
-
-  66% {
-    transform:
-      rotateY(177deg)
-      rotateX(-2deg)
-      rotateZ(0.7deg);
-
-    animation-timing-function: ease-in-out;
-  }
-
-  78% {
-    transform:
-      rotateY(183deg)
-      rotateX(1.5deg)
-      rotateZ(-0.5deg);
-
+  75% {
+    transform: rotateY(177deg) rotateX(-1.4deg);
     animation-timing-function: ease-in-out;
   }
 
   88% {
-    transform:
-      rotateY(179deg)
-      rotateX(-0.8deg)
-      rotateZ(0.3deg);
-
+    transform: rotateY(181deg) rotateX(.6deg);
     animation-timing-function: ease-in-out;
   }
 
   100% {
-    transform:
-      rotateY(180deg)
-      rotateX(0deg)
-      rotateZ(0deg);
+    transform: rotateY(180deg) rotateX(0deg);
   }
 }
 
-/* ============================================
-   FASTER, MOVEMENT-SYNCED REFLECTION
-   ============================================ */
+/* ==========================================
+   REFLECTION FOLLOWING THE ROTATION
+   ========================================== */
 
-/*
-   Uses transform instead of left position.
-
-   The reflection moves quickly during the
-   main rotation, then shifts back and forth
-   with the card's subtle sway.
-
-   Percentages refer to shimmer width.
-*/
-
-@keyframes fastReflection {
-
-  0%,
-  32% {
-    transform:
-      translate3d(0, 0, 0)
-      skewX(-22deg);
+@keyframes lightReflection {
+  0%, 34% {
     opacity: 0;
+    transform: translate3d(-120%,0,0);
   }
 
-  /* Front becomes visible during rotation */
-
-  35% {
-    transform:
-      translate3d(70%, 0, 0)
-      skewX(-22deg);
-    opacity: .40;
+  /* Reflection begins while front is emerging */
+  38% {
+    opacity: var(--shine-strength);
+    transform: translate3d(-65%,0,0);
   }
 
-  39% {
-    transform:
-      translate3d(250%, 0, 0)
-      skewX(-22deg);
-    opacity: var(--shimmer-opacity);
-  }
-
-  /* Fast sweep through main flip */
-
-  44% {
-    transform:
-      translate3d(450%, 0, 0)
-      skewX(-22deg);
-    opacity: .48;
-  }
-
-  /* Follow the initial tilt */
-
-  54% {
-    transform:
-      translate3d(335%, 0, 0)
-      skewX(-22deg);
+  /* Crosses the entire face during the flip */
+  49% {
     opacity: .58;
+    transform: translate3d(85%,0,0);
   }
 
-  /* Reflection changes direction with sway */
-
-  66% {
-    transform:
-      translate3d(425%, 0, 0)
-      skewX(-22deg);
-    opacity: .67;
+  /* Moves back as the card sways */
+  59% {
+    opacity: .48;
+    transform: translate3d(42%,0,0);
   }
 
-  78% {
-    transform:
-      translate3d(285%, 0, 0)
-      skewX(-22deg);
-    opacity: .57;
+  75% {
+    opacity: .62;
+    transform: translate3d(-35%,0,0);
   }
 
   88% {
-    transform:
-      translate3d(385%, 0, 0)
-      skewX(-22deg);
-    opacity: .38;
+    opacity: .40;
+    transform: translate3d(25%,0,0);
   }
 
-  /* Fade with card */
-
+  /* Fade with the card */
   100% {
-    transform:
-      translate3d(435%, 0, 0)
-      skewX(-22deg);
     opacity: 0;
+    transform: translate3d(80%,0,0);
   }
 }
 
-/* ============================================
-   TEXT ENTRANCE / EXIT
-   ============================================ */
+/* Text fade */
 
 @keyframes panelReveal {
-
-  0%,
-  40% {
+  0%,40% {
     opacity: 0;
-    transform:
-      translate(-50%, 25px);
+    transform: translate(-50%,25px);
   }
 
-  50%,
-  82% {
+  50%,82% {
     opacity: 1;
-    transform:
-      translate(-50%, 0);
+    transform: translate(-50%,0);
   }
 
   100% {
     opacity: 0;
-    transform:
-      translate(-50%, -12px);
+    transform: translate(-50%,-12px);
   }
 }
 
-/* ============================================
-   RARITY AURA
-   ============================================ */
+/* Rarity aura */
 
 @keyframes aura {
-
   0% {
     opacity: 0;
     scale: .5;
