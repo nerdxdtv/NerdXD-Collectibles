@@ -1,7 +1,7 @@
 
 /* ============================================
    NERDXD COLLECTIBLES — OBS REVEAL OVERLAY
-   Version 4
+   Version 5 — Reflective Card Shimmer
    Canvas: 2560 x 1080
    ============================================ */
 
@@ -19,6 +19,10 @@
 
 :root {
   --accent: #00f870;
+
+  /* Reflection strength */
+  --gloss-opacity: 0.22;
+  --shimmer-opacity: 0.65;
 }
 
 * {
@@ -32,7 +36,8 @@ body {
   height: 100%;
   overflow: hidden;
   background: transparent;
-  font-family: "Brownist", "Trebuchet MS", Arial, sans-serif;
+  font-family:
+    "Brownist", "Trebuchet MS", Arial, sans-serif;
 }
 
 /* MAIN STAGE */
@@ -66,7 +71,11 @@ body {
 
   background: radial-gradient(
     circle,
-    color-mix(in srgb, var(--accent) 43%, transparent),
+    color-mix(
+      in srgb,
+      var(--accent) 43%,
+      transparent
+    ),
     transparent 67%
   );
 
@@ -92,6 +101,9 @@ body {
   filter: drop-shadow(
     0 18px 22px rgba(0, 0, 0, 0.6)
   );
+
+  /* Preserve 3D perspective and card edges */
+  overflow: visible;
 }
 
 /* 3D CARD ROTATION */
@@ -105,10 +117,7 @@ body {
   transform: rotateY(0deg);
 }
 
-/* CARD FACES
-   No artificial rounded corners or clipping.
-   Original artwork bezels remain intact.
-*/
+/* CARD FACES */
 
 .face {
   position: absolute;
@@ -118,19 +127,18 @@ body {
   -webkit-backface-visibility: hidden;
 
   border-radius: 0;
-  overflow: visible;
+
+  /* Clips shimmer to the card's rectangular bounds */
+  overflow: hidden;
 
   transform-style: flat;
 }
 
 .face img {
   display: block;
-
   width: 100%;
   height: 100%;
-
   object-fit: fill;
-
   border-radius: 0;
 }
 
@@ -144,7 +152,69 @@ body {
   transform: rotateY(180deg);
 }
 
-/* TEXT PANEL */
+/* ============================================
+   CARD REFLECTION / GLOSS
+   ============================================ */
+
+/* Subtle reflective coating on the front */
+
+.face.front::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+
+  pointer-events: none;
+
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.07) 18%,
+    rgba(255, 255, 255, 0.00) 43%,
+    rgba(255, 255, 255, 0.02) 72%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+
+  mix-blend-mode: screen;
+  opacity: var(--gloss-opacity);
+}
+
+/* Diagonal moving light streak */
+
+.face.front::after {
+  content: "";
+  position: absolute;
+
+  top: -35%;
+  bottom: -35%;
+  left: -65%;
+
+  width: 38%;
+  height: 170%;
+
+  z-index: 4;
+  pointer-events: none;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.00) 0%,
+    rgba(255, 255, 255, 0.03) 15%,
+    rgba(255, 255, 255, 0.10) 33%,
+    rgba(255, 255, 255, 0.27) 50%,
+    rgba(255, 255, 255, 0.10) 67%,
+    rgba(255, 255, 255, 0.03) 85%,
+    rgba(255, 255, 255, 0.00) 100%
+  );
+
+  transform: skewX(-22deg);
+  filter: blur(4px);
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+
+/* ============================================
+   TEXT PANEL
+   ============================================ */
 
 .text-panel {
   position: absolute;
@@ -161,7 +231,8 @@ body {
 
   color: #ffffff;
 
-  font-family: "Brownist", "Trebuchet MS", Arial, sans-serif;
+  font-family:
+    "Brownist", "Trebuchet MS", Arial, sans-serif;
 
   text-shadow:
     0 3px 10px #000000,
@@ -171,11 +242,11 @@ body {
 /* NEW CARD / DUPLICATE HEADLINE */
 
 .headline {
-  font-family: "Brownist", "Trebuchet MS", Arial, sans-serif;
+  font-family:
+    "Brownist", "Trebuchet MS", Arial, sans-serif;
 
   font-size: 57px;
   font-weight: 400;
-
   letter-spacing: 2px;
   color: var(--accent);
 }
@@ -183,11 +254,11 @@ body {
 /* VIEWER USERNAME */
 
 .viewer {
-  font-family: "Brownist", "Trebuchet MS", Arial, sans-serif;
+  font-family:
+    "Brownist", "Trebuchet MS", Arial, sans-serif;
 
   font-size: 39px;
   font-weight: 400;
-
   overflow-wrap: anywhere;
 }
 
@@ -196,11 +267,11 @@ body {
 .detail {
   margin-top: 8px;
 
-  font-family: "Brownist", "Trebuchet MS", Arial, sans-serif;
+  font-family:
+    "Brownist", "Trebuchet MS", Arial, sans-serif;
 
   font-size: 27px;
   font-weight: 400;
-
   letter-spacing: 2px;
   text-transform: uppercase;
 }
@@ -226,40 +297,55 @@ body {
   animation: panelReveal 7s ease forwards;
 }
 
-/* CARD ENTRANCE / EXIT */
+/* New: once-only shimmer after the flip */
+
+#stage.active .face.front::after {
+  animation:
+    cardShimmer 7s ease-in-out forwards;
+}
+
+/* ============================================
+   ORIGINAL CARD ENTRANCE / EXIT
+   ============================================ */
 
 @keyframes cardEnter {
   0% {
     opacity: 0;
-    transform: translate(-50%, -40%) scale(.55);
+    transform:
+      translate(-50%, -40%) scale(.55);
   }
 
   12% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform:
+      translate(-50%, -50%) scale(1);
   }
 
   27% {
-    transform: translate(-50%, -50%) scale(1);
+    transform:
+      translate(-50%, -50%) scale(1);
   }
 
   44% {
-    transform: translate(-50%, -50%) scale(1.07);
+    transform:
+      translate(-50%, -50%) scale(1.07);
   }
 
   54%,
   83% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform:
+      translate(-50%, -50%) scale(1);
   }
 
   100% {
     opacity: 0;
-    transform: translate(-50%, -58%) scale(.92);
+    transform:
+      translate(-50%, -58%) scale(.92);
   }
 }
 
-/* 3D CARD FLIP */
+/* ORIGINAL 3D CARD FLIP */
 
 @keyframes flipReveal {
   0%,
@@ -273,7 +359,7 @@ body {
   }
 }
 
-/* TEXT FADE-IN / FADE-OUT */
+/* ORIGINAL TEXT ENTRANCE / EXIT */
 
 @keyframes panelReveal {
   0%,
@@ -294,7 +380,7 @@ body {
   }
 }
 
-/* RARITY AURA ANIMATION */
+/* ORIGINAL RARITY AURA */
 
 @keyframes aura {
   0% {
@@ -321,90 +407,42 @@ body {
     opacity: 0;
     scale: 1.2;
   }
-/* ================================
-   CARD REFLECTIVE SHIMMER EFFECT
-================================ */
-
-/* Make sure the card clips the shine cleanly */
-.card {
-  overflow: hidden;
-  isolation: isolate;
 }
 
-/* Make sure each face can carry the shine */
-.face {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
+/* ============================================
+   NEW: REFLECTIVE LIGHT SWEEP
+   ============================================ */
 
-/* Soft overall glossy coating */
-.face::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 3;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,0.12) 0%,
-      rgba(255,255,255,0.05) 18%,
-      rgba(255,255,255,0.00) 42%,
-      rgba(255,255,255,0.03) 68%,
-      rgba(255,255,255,0.08) 100%
-    );
-  mix-blend-mode: screen;
-  opacity: 0.45;
-}
-
-/* Moving shimmer streak */
-.face::after {
-  content: "";
-  position: absolute;
-  top: -20%;
-  bottom: -20%;
-  left: -45%;
-  width: 32%;
-  pointer-events: none;
-  z-index: 4;
-  background: linear-gradient(
-    90deg,
-    rgba(255,255,255,0.00) 0%,
-    rgba(255,255,255,0.03) 20%,
-    rgba(255,255,255,0.18) 50%,
-    rgba(255,255,255,0.03) 80%,
-    rgba(255,255,255,0.00) 100%
-  );
-  transform: skewX(-20deg);
-  filter: blur(1px);
-  mix-blend-mode: screen;
-  opacity: 0;
-  animation: cardShimmer 6s ease-in-out infinite;
-}
+/*
+   0–48%:  Invisible while card enters/flips
+   48–54%: Light begins entering from left
+   54–73%: Light sweeps across the card
+   73–100%: Reflection disappears
+*/
 
 @keyframes cardShimmer {
-  0%, 58%, 100% {
-    left: -45%;
+  0%,
+  48% {
+    left: -65%;
     opacity: 0;
   }
 
-  62% {
+  54% {
+    left: -55%;
+    opacity: var(--shimmer-opacity);
+  }
+
+  65% {
+    opacity: var(--shimmer-opacity);
+  }
+
+  73% {
+    left: 145%;
     opacity: 0;
   }
 
-  66% {
-    opacity: 0.85;
-  }
-
-  78% {
-    left: 115%;
-    opacity: 0.20;
-  }
-
-  82% {
-    left: 115%;
+  100% {
+    left: 145%;
     opacity: 0;
   }
-}
 }
