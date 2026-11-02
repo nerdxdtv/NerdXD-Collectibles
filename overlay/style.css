@@ -1,23 +1,324 @@
-:root{--accent:#00f870}
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font-family:Trebuchet MS,Arial,sans-serif}
-#stage{width:2560px;height:1080px;position:absolute;top:0;left:0;transform-origin:top left;pointer-events:none;visibility:hidden}
-#stage.active{visibility:visible}
-.effect{position:absolute;left:50%;top:48%;width:930px;height:930px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 43%,transparent),transparent 67%);opacity:0;filter:blur(35px)}
-/* The stationary parent owns perspective. The child owns rotation. */
-.card{position:absolute;left:50%;top:46%;width:490px;height:588px;transform:translate(-50%,-50%);perspective:1600px;opacity:0;filter:drop-shadow(0 18px 22px #0009)}
-.card-rotor{position:relative;width:100%;height:100%;transform-style:preserve-3d;transform:rotateY(0deg)}
-.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:26px;overflow:hidden;transform-style:flat}
-.face img{display:block;width:100%;height:100%;object-fit:fill}
-.face.back{transform:rotateY(0deg)}
-.face.front{transform:rotateY(180deg)}
-.text-panel{position:absolute;top:825px;left:50%;transform:translate(-50%,25px);width:1000px;text-align:center;opacity:0;color:#fff;text-shadow:0 3px 10px #000,0 0 18px #000}
-.headline{font-size:57px;letter-spacing:2px;color:var(--accent);font-weight:900}.viewer{font-size:39px;font-weight:900;overflow-wrap:anywhere}.detail{margin-top:8px;font-size:27px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
-#stage.active .effect{animation:aura 7s ease forwards}
-#stage.active .card{animation:cardEnter 7s ease forwards}
-#stage.active .card-rotor{animation:flipReveal 7s ease-in-out forwards}
-#stage.active .text-panel{animation:panelReveal 7s ease forwards}
-@keyframes cardEnter{0%{opacity:0;transform:translate(-50%,-40%) scale(.55)}12%{opacity:1;transform:translate(-50%,-50%) scale(1)}27%{transform:translate(-50%,-50%) scale(1)}44%{transform:translate(-50%,-50%) scale(1.07)}54%,83%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-58%) scale(.92)}}
-@keyframes flipReveal{0%,27%{transform:rotateY(0deg)}44%,100%{transform:rotateY(180deg)}}
-@keyframes panelReveal{0%,40%{opacity:0;transform:translate(-50%,25px)}50%,82%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-12px)}}
-@keyframes aura{0%{opacity:0;scale:.5}17%{opacity:.5;scale:1}45%{opacity:.75;scale:1.14}80%{opacity:.5;scale:1.05}100%{opacity:0;scale:1.2}}
+
+/* ============================================
+   NERDXD COLLECTIBLES — OBS REVEAL OVERLAY
+   Version 4
+   Canvas: 2560 x 1080
+   ============================================ */
+
+/* BROWNIST FONT */
+
+@font-face {
+  font-family: "Brownist";
+  src: url("./fonts/Brownist.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* GLOBAL SETTINGS */
+
+:root {
+  --accent: #00f870;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+  font-family: "Brownist", "Trebuchet MS", Arial, sans-serif;
+}
+
+/* MAIN STAGE */
+
+#stage {
+  width: 2560px;
+  height: 1080px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+#stage.active {
+  visibility: visible;
+}
+
+/* RARITY GLOW */
+
+.effect {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: 930px;
+  height: 930px;
+
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent) 43%, transparent),
+    transparent 67%
+  );
+
+  opacity: 0;
+  filter: blur(35px);
+}
+
+/* CARD POSITIONING */
+
+.card {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+
+  width: 490px;
+  height: 588px;
+
+  transform: translate(-50%, -50%);
+  perspective: 1600px;
+
+  opacity: 0;
+
+  filter: drop-shadow(
+    0 18px 22px rgba(0, 0, 0, 0.6)
+  );
+}
+
+/* 3D CARD ROTATION */
+
+.card-rotor {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  transform-style: preserve-3d;
+  transform: rotateY(0deg);
+}
+
+/* CARD FACES
+   No artificial rounded corners or clipping.
+   Original artwork bezels remain intact.
+*/
+
+.face {
+  position: absolute;
+  inset: 0;
+
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  border-radius: 0;
+  overflow: visible;
+
+  transform-style: flat;
+}
+
+.face img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: fill;
+
+  border-radius: 0;
+}
+
+/* FRONT AND BACK ORIENTATION */
+
+.face.back {
+  transform: rotateY(0deg);
+}
+
+.face.front {
+  transform: rotateY(180deg);
+}
+
+/* TEXT PANEL */
+
+.text-panel {
+  position: absolute;
+
+  top: 825px;
+  left: 50%;
+
+  transform: translate(-50%, 25px);
+
+  width: 1000px;
+
+  text-align: center;
+  opacity: 0;
+
+  color: #ffffff;
+
+  font-family: "Brownist", "Trebuchet MS", Arial, sans-serif;
+
+  text-shadow:
+    0 3px 10px #000000,
+    0 0 18px #000000;
+}
+
+/* NEW CARD / DUPLICATE HEADLINE */
+
+.headline {
+  font-family: "Brownist", "Trebuchet MS", Arial, sans-serif;
+
+  font-size: 57px;
+  font-weight: 400;
+
+  letter-spacing: 2px;
+  color: var(--accent);
+}
+
+/* VIEWER USERNAME */
+
+.viewer {
+  font-family: "Brownist", "Trebuchet MS", Arial, sans-serif;
+
+  font-size: 39px;
+  font-weight: 400;
+
+  overflow-wrap: anywhere;
+}
+
+/* CARD NAME AND RARITY */
+
+.detail {
+  margin-top: 8px;
+
+  font-family: "Brownist", "Trebuchet MS", Arial, sans-serif;
+
+  font-size: 27px;
+  font-weight: 400;
+
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ============================================
+   ANIMATION TRIGGERS
+   Total duration: 7 seconds
+   ============================================ */
+
+#stage.active .effect {
+  animation: aura 7s ease forwards;
+}
+
+#stage.active .card {
+  animation: cardEnter 7s ease forwards;
+}
+
+#stage.active .card-rotor {
+  animation: flipReveal 7s ease-in-out forwards;
+}
+
+#stage.active .text-panel {
+  animation: panelReveal 7s ease forwards;
+}
+
+/* CARD ENTRANCE / EXIT */
+
+@keyframes cardEnter {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -40%) scale(.55);
+  }
+
+  12% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  27% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  44% {
+    transform: translate(-50%, -50%) scale(1.07);
+  }
+
+  54%,
+  83% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -58%) scale(.92);
+  }
+}
+
+/* 3D CARD FLIP */
+
+@keyframes flipReveal {
+  0%,
+  27% {
+    transform: rotateY(0deg);
+  }
+
+  44%,
+  100% {
+    transform: rotateY(180deg);
+  }
+}
+
+/* TEXT FADE-IN / FADE-OUT */
+
+@keyframes panelReveal {
+  0%,
+  40% {
+    opacity: 0;
+    transform: translate(-50%, 25px);
+  }
+
+  50%,
+  82% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -12px);
+  }
+}
+
+/* RARITY AURA ANIMATION */
+
+@keyframes aura {
+  0% {
+    opacity: 0;
+    scale: .5;
+  }
+
+  17% {
+    opacity: .5;
+    scale: 1;
+  }
+
+  45% {
+    opacity: .75;
+    scale: 1.14;
+  }
+
+  80% {
+    opacity: .5;
+    scale: 1.05;
+  }
+
+  100% {
+    opacity: 0;
+    scale: 1.2;
+  }
+}
