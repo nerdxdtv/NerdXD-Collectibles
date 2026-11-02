@@ -321,4 +321,90 @@ body {
     opacity: 0;
     scale: 1.2;
   }
+/* ================================
+   CARD REFLECTIVE SHIMMER EFFECT
+================================ */
+
+/* Make sure the card clips the shine cleanly */
+.card {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Make sure each face can carry the shine */
+.face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Soft overall glossy coating */
+.face::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.12) 0%,
+      rgba(255,255,255,0.05) 18%,
+      rgba(255,255,255,0.00) 42%,
+      rgba(255,255,255,0.03) 68%,
+      rgba(255,255,255,0.08) 100%
+    );
+  mix-blend-mode: screen;
+  opacity: 0.45;
+}
+
+/* Moving shimmer streak */
+.face::after {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -45%;
+  width: 32%;
+  pointer-events: none;
+  z-index: 4;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.00) 0%,
+    rgba(255,255,255,0.03) 20%,
+    rgba(255,255,255,0.18) 50%,
+    rgba(255,255,255,0.03) 80%,
+    rgba(255,255,255,0.00) 100%
+  );
+  transform: skewX(-20deg);
+  filter: blur(1px);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: cardShimmer 6s ease-in-out infinite;
+}
+
+@keyframes cardShimmer {
+  0%, 58%, 100% {
+    left: -45%;
+    opacity: 0;
+  }
+
+  62% {
+    opacity: 0;
+  }
+
+  66% {
+    opacity: 0.85;
+  }
+
+  78% {
+    left: 115%;
+    opacity: 0.20;
+  }
+
+  82% {
+    left: 115%;
+    opacity: 0;
+  }
+}
 }
