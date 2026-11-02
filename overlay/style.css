@@ -1,7 +1,7 @@
 
 /* ============================================
    NERDXD COLLECTIBLES — OBS REVEAL OVERLAY
-   Version 6 — Reflective 3D Sway
+   Version 7 — Continuous Motion & Reflection
    Canvas: 2560 x 1080
    Duration: 7 seconds
    ============================================ */
@@ -69,7 +69,6 @@ body {
 
 .effect {
   position: absolute;
-
   left: 50%;
   top: 48%;
 
@@ -110,7 +109,6 @@ body {
   perspective: 1600px;
 
   opacity: 0;
-
   overflow: visible;
 
   filter: drop-shadow(
@@ -119,7 +117,7 @@ body {
 }
 
 /* ============================================
-   3D CARD ROTOR
+   3D ROTOR
    ============================================ */
 
 .card-rotor {
@@ -129,13 +127,12 @@ body {
   height: 100%;
 
   transform-style: preserve-3d;
+  transform-origin: center center;
 
   transform:
     rotateY(0deg)
     rotateX(0deg)
     rotateZ(0deg);
-
-  transform-origin: center center;
 }
 
 /* ============================================
@@ -163,8 +160,6 @@ body {
   border-radius: 0;
 }
 
-/* Front and back orientation */
-
 .face.back {
   transform: rotateY(0deg);
 }
@@ -175,7 +170,7 @@ body {
 }
 
 /* ============================================
-   STATIC REFLECTIVE COATING
+   SUBTLE REFLECTIVE COATING
    ============================================ */
 
 .face.front::before {
@@ -188,11 +183,11 @@ body {
 
   background: linear-gradient(
     155deg,
-    rgba(255, 255, 255, 0.19) 0%,
-    rgba(255, 255, 255, 0.09) 18%,
-    rgba(255, 255, 255, 0.00) 43%,
-    rgba(255, 255, 255, 0.03) 72%,
-    rgba(255, 255, 255, 0.12) 100%
+    rgba(255,255,255,0.19) 0%,
+    rgba(255,255,255,0.09) 18%,
+    rgba(255,255,255,0.00) 43%,
+    rgba(255,255,255,0.03) 72%,
+    rgba(255,255,255,0.12) 100%
   );
 
   mix-blend-mode: screen;
@@ -200,15 +195,14 @@ body {
 }
 
 /* ============================================
-   MOVING LIGHT REFLECTION
+   REFLECTIVE LIGHT STREAK
    ============================================ */
 
 .face.front::after {
   content: "";
-
   position: absolute;
-  z-index: 4;
 
+  z-index: 4;
   pointer-events: none;
 
   top: -35%;
@@ -219,20 +213,22 @@ body {
 
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.00) 0%,
-    rgba(255, 255, 255, 0.05) 13%,
-    rgba(255, 255, 255, 0.17) 28%,
-    rgba(255, 255, 255, 0.39) 45%,
-    rgba(255, 255, 255, 0.52) 50%,
-    rgba(255, 255, 255, 0.39) 55%,
-    rgba(255, 255, 255, 0.17) 72%,
-    rgba(255, 255, 255, 0.05) 87%,
-    rgba(255, 255, 255, 0.00) 100%
+    rgba(255,255,255,0.00) 0%,
+    rgba(255,255,255,0.05) 12%,
+    rgba(255,255,255,0.17) 28%,
+    rgba(255,255,255,0.40) 44%,
+    rgba(255,255,255,0.56) 50%,
+    rgba(255,255,255,0.40) 56%,
+    rgba(255,255,255,0.17) 72%,
+    rgba(255,255,255,0.05) 88%,
+    rgba(255,255,255,0.00) 100%
   );
 
-  transform: skewX(-22deg);
+  transform:
+    translate3d(0, 0, 0)
+    skewX(-22deg);
 
-  filter: blur(3px);
+  filter: blur(2px);
   mix-blend-mode: screen;
 
   opacity: 0;
@@ -248,9 +244,9 @@ body {
   top: 825px;
   left: 50%;
 
-  transform: translate(-50%, 25px);
-
   width: 1000px;
+
+  transform: translate(-50%, 25px);
 
   text-align: center;
   opacity: 0;
@@ -308,11 +304,13 @@ body {
 }
 
 #stage.active .card {
-  animation: cardEnter 7s ease forwards;
+  animation: continuousFloat 7s linear forwards;
+  will-change: transform, opacity;
 }
 
 #stage.active .card-rotor {
-  animation: flipAndSway 7s ease-in-out forwards;
+  animation: smoothFlipSway 7s linear forwards;
+  will-change: transform;
 }
 
 #stage.active .text-panel {
@@ -320,19 +318,29 @@ body {
 }
 
 #stage.active .face.front::after {
-  animation: reflectiveMovement 7s linear forwards;
+  animation: fastReflection 7s linear forwards;
+  will-change: transform, opacity;
 }
 
 /* ============================================
-   CARD ENTRANCE AND FLOAT
+   CONTINUOUS FLOAT
    ============================================ */
 
-@keyframes cardEnter {
+/*
+   Small vertical motion begins during entrance.
+   Motion continues through flip and sway.
+   Final fade-out remains unchanged.
+*/
+
+@keyframes continuousFloat {
+
   0% {
     opacity: 0;
     transform:
       translate(-50%, -40%)
       scale(.55);
+    animation-timing-function:
+      cubic-bezier(.22, 1, .36, 1);
   }
 
   12% {
@@ -340,53 +348,57 @@ body {
     transform:
       translate(-50%, -50%)
       scale(1);
+    animation-timing-function: ease-in-out;
   }
 
   27% {
     opacity: 1;
     transform:
-      translate(-50%, -50%)
+      translate(-50%, -51%)
       scale(1);
+    animation-timing-function: ease-in-out;
   }
 
-  44% {
+  43% {
     opacity: 1;
     transform:
-      translate(-50%, -50%)
-      scale(1.07);
+      translate(-50%, -49.7%)
+      scale(1.045);
+    animation-timing-function: ease-in-out;
   }
 
-  /* Begin gentle floating after the flip */
-
-  54% {
+  55% {
     opacity: 1;
     transform:
-      translate(-50%, -50%)
+      translate(-50%, -51.2%)
+      scale(1.01);
+    animation-timing-function: ease-in-out;
+  }
+
+  68% {
+    opacity: 1;
+    transform:
+      translate(-50%, -49.5%)
       scale(1);
+    animation-timing-function: ease-in-out;
   }
 
-  64% {
-    opacity: 1;
-    transform:
-      translate(-50%, -52%)
-      scale(1.015);
-  }
-
-  74% {
-    opacity: 1;
-    transform:
-      translate(-50%, -49%)
-      scale(1);
-  }
-
-  83% {
+  81% {
     opacity: 1;
     transform:
       translate(-50%, -51%)
       scale(1.01);
+    animation-timing-function: ease-in-out;
   }
 
-  /* Original fade-out */
+  86% {
+    opacity: 1;
+    transform:
+      translate(-50%, -50.5%)
+      scale(1);
+    animation-timing-function:
+      cubic-bezier(.4, 0, .8, 1);
+  }
 
   100% {
     opacity: 0;
@@ -397,12 +409,17 @@ body {
 }
 
 /* ============================================
-   3D FLIP AND POST-REVEAL SWAY
+   SMOOTH FLIP INTO GENTLE SWAY
    ============================================ */
 
-@keyframes flipAndSway {
+/*
+   The flip slows into its final orientation
+   instead of stopping abruptly.
 
-  /* Card starts with its back visible */
+   Small, continuous 3D sway follows.
+*/
+
+@keyframes smoothFlipSway {
 
   0%,
   27% {
@@ -410,58 +427,71 @@ body {
       rotateY(0deg)
       rotateX(0deg)
       rotateZ(0deg);
+
+    animation-timing-function:
+      cubic-bezier(.18, .72, .30, 1);
   }
 
-  /* Front begins becoming visible here.
-     The reflective streak starts at this point. */
+  /* Front begins becoming visible */
 
-  36% {
+  35% {
     transform:
-      rotateY(118deg)
-      rotateX(0deg)
-      rotateZ(0deg);
+      rotateY(103deg)
+      rotateX(0.5deg)
+      rotateZ(-0.2deg);
+
+    animation-timing-function:
+      cubic-bezier(.24, .65, .55, 1);
   }
 
-  /* Original flip completes */
+  /* Finish the flip with slight overshoot */
 
   44% {
     transform:
-      rotateY(180deg)
-      rotateX(0deg)
-      rotateZ(0deg);
+      rotateY(182deg)
+      rotateX(1deg)
+      rotateZ(-0.3deg);
+
+    animation-timing-function: ease-in-out;
   }
 
-  /* Gentle 3D sway after reveal */
+  /* Settle gradually into the first sway */
 
   54% {
     transform:
-      rotateY(177deg)
+      rotateY(184deg)
       rotateX(2deg)
       rotateZ(-0.7deg);
+
+    animation-timing-function: ease-in-out;
   }
 
-  64% {
-    transform:
-      rotateY(184deg)
-      rotateX(-2deg)
-      rotateZ(0.8deg);
-  }
-
-  74% {
+  66% {
     transform:
       rotateY(177deg)
-      rotateX(1.5deg)
-      rotateZ(-0.6deg);
+      rotateX(-2deg)
+      rotateZ(0.7deg);
+
+    animation-timing-function: ease-in-out;
   }
 
-  83% {
+  78% {
     transform:
-      rotateY(182deg)
-      rotateX(-1deg)
-      rotateZ(0.4deg);
+      rotateY(183deg)
+      rotateX(1.5deg)
+      rotateZ(-0.5deg);
+
+    animation-timing-function: ease-in-out;
   }
 
-  /* Settle while fading away */
+  88% {
+    transform:
+      rotateY(179deg)
+      rotateX(-0.8deg)
+      rotateZ(0.3deg);
+
+    animation-timing-function: ease-in-out;
+  }
 
   100% {
     transform:
@@ -472,79 +502,98 @@ body {
 }
 
 /* ============================================
-   REFLECTION TRACKING CARD ANGLE
+   FASTER, MOVEMENT-SYNCED REFLECTION
    ============================================ */
 
 /*
-   Reflection starts during the flip as the
-   front face becomes visible.
+   Uses transform instead of left position.
 
-   After the reveal, the light travels back
-   and forth in coordination with the
-   card's gentle 3D sway.
+   The reflection moves quickly during the
+   main rotation, then shifts back and forth
+   with the card's subtle sway.
+
+   Percentages refer to shimmer width.
 */
 
-@keyframes reflectiveMovement {
+@keyframes fastReflection {
 
   0%,
-  33% {
-    left: -75%;
+  32% {
+    transform:
+      translate3d(0, 0, 0)
+      skewX(-22deg);
     opacity: 0;
   }
 
-  /* Light appears during flip */
+  /* Front becomes visible during rotation */
 
-  36% {
-    left: -55%;
-    opacity: 0.35;
+  35% {
+    transform:
+      translate3d(70%, 0, 0)
+      skewX(-22deg);
+    opacity: .40;
   }
 
-  40% {
-    left: -15%;
+  39% {
+    transform:
+      translate3d(250%, 0, 0)
+      skewX(-22deg);
     opacity: var(--shimmer-opacity);
   }
 
+  /* Fast sweep through main flip */
+
   44% {
-    left: 35%;
-    opacity: 0.63;
+    transform:
+      translate3d(450%, 0, 0)
+      skewX(-22deg);
+    opacity: .48;
   }
 
-  /* Card sways toward the left */
+  /* Follow the initial tilt */
 
   54% {
-    left: 85%;
-    opacity: 0.47;
+    transform:
+      translate3d(335%, 0, 0)
+      skewX(-22deg);
+    opacity: .58;
   }
 
-  /* Card sways toward the right */
+  /* Reflection changes direction with sway */
 
-  64% {
-    left: 45%;
-    opacity: 0.55;
+  66% {
+    transform:
+      translate3d(425%, 0, 0)
+      skewX(-22deg);
+    opacity: .67;
   }
 
-  /* Light moves with the card */
-
-  74% {
-    left: -15%;
-    opacity: 0.52;
+  78% {
+    transform:
+      translate3d(285%, 0, 0)
+      skewX(-22deg);
+    opacity: .57;
   }
 
-  83% {
-    left: 35%;
-    opacity: 0.38;
+  88% {
+    transform:
+      translate3d(385%, 0, 0)
+      skewX(-22deg);
+    opacity: .38;
   }
 
-  /* Reflection fades with card */
+  /* Fade with card */
 
   100% {
-    left: 85%;
+    transform:
+      translate3d(435%, 0, 0)
+      skewX(-22deg);
     opacity: 0;
   }
 }
 
 /* ============================================
-   ORIGINAL TEXT FADE
+   TEXT ENTRANCE / EXIT
    ============================================ */
 
 @keyframes panelReveal {
@@ -571,7 +620,7 @@ body {
 }
 
 /* ============================================
-   ORIGINAL RARITY AURA
+   RARITY AURA
    ============================================ */
 
 @keyframes aura {
